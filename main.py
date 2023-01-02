@@ -1,47 +1,26 @@
-import json
-from datetime import datetime
-from bookmark_extract import bookmark_dict, __full_path
-import subprocess
+import os
+from src.bookmark_extract import Bookmark
 
+parent = os.getcwd()
+# Set the location of the python file
+python_file = os.path.join(parent, "src", "json_file.py")
 
-def bookmark_mod(path):
-    command = f'stat -c "%Y" {path}'
-    timestamp = subprocess.check_output(command, shell=True).decode()
-    print(type(timestamp), timestamp)
-    return int(timestamp)
+# Set the frequency of the cron job.
+# This example runs the job every 3 hours.
+frequency = "0 */3 * * *"
 
+# Create the command to be run by the cron job
+python_path = Bookmark.python_path()
 
-def bookmark_data(d):
-    for id, name, url in filtered_json():
-        # await asyncio.sleep(0.5)
-        d[id] = {'name': name, 'url': url}
-    d['last_synced'] = fetch_epoch_time()
+command = f"{frequency} {python_path} {python_file} &"
 
+# Add the cron job to the crontab file
+cron_path = os.path.join(parent, 'src', 'crontab.txt')
 
-def filtered_json():
-    book_dict = bookmark_dict()['roots']['bookmark_bar']['children']
-    for i in range(len(book_dict)):
-        # await asyncio.sleep(0.5)
-        yield book_dict[i]['id'], book_dict[i]['name'], book_dict[i]['url']
+os.system(f"crontab -l > {cron_path}")
+with open(cron_path, "a") as f:
+    f.write(f"{command}\n")
+os.system(f"crontab {cron_path}")
 
-
-def fetch_epoch_time():
-    curr_time = bookmark_mod(__full_path)
-    # epoch_start = datetime.datetime(1601, 1, 1)
-    # delta = datetime.timedelta(microseconds=int(curr_time))
-    # return (epoch_start + delta).strftime("%d-%m-%Y %H:%M:%S")
-    last_synced = datetime.utcfromtimestamp(curr_time).strftime("UTC: %d-%m-%Y %H:%M:%S")
-    return last_synced
-
-
-def main():
-    with open('data.json', 'w+') as f:
-        try:
-            d = json.load(f)
-        except json.decoder.JSONDecodeError:
-            d = {}
-        bookmark_data(d)
-        json.dump(d, f, indent=4)
-
-
-main()
+# Print a message to confirm that the cron job was added
+os.system(f"Cron job added for Bookmarks")
