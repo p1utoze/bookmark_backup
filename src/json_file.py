@@ -3,7 +3,6 @@ from datetime import datetime
 from bookmark_extract import Bookmark
 import subprocess
 # from timeit import default_timer
-
 def bookmark_mod(path):
     command = f'stat -c "%Y" {path}'
     timestamp = subprocess.check_output(command, shell=True).decode()
@@ -15,7 +14,8 @@ def bookmark_data(d):
     for id, name, url in filtered_json():
         # await asyncio.sleep(0.5)
         d[id] = {'name': name, 'url': url}
-    d['last_synced'] = fetch_epoch_time()
+    d['last_updated'] = fetch_epoch_time()
+    d['last_synced'] = datetime.now().strftime('%d-%m-%Y %I:%M:%S %p')
 
 
 def filtered_json():
@@ -35,7 +35,7 @@ def fetch_epoch_time():
 
 
 def main():
-    with open('data.json', 'w+') as f:
+    with open(f'data.json', 'w+') as f:
         try:
             d = json.load(f)
         except json.decoder.JSONDecodeError:
@@ -43,8 +43,17 @@ def main():
         bookmark_data(d)
         json.dump(d, f, indent=4)
 
+    with open(f"bookmark_log.txt", 'a+') as f:
+        try:
+            if f.readlines()[0].startswith("Created"):
+                mode = 'Updated'
+        except IndexError:
+            mode = 'Created'
+        log_text = f"{mode} 'data.json' -> {datetime.now().strftime('%d-%m-%Y %I:%M:%S %p')}\n" \
+                   f"Saved in default home directory!]\n"
+        subprocess.run(['cat'], text=True, input=log_text, stdout=f)
+
 
 if __name__ == '__main__':
     mybookmark = Bookmark()
     main()
-    print(f"Created 'data.json' -> {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}\nSaved in default home directory!")
