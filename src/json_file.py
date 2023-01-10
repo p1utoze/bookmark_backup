@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from src.bookmark_extract import Bookmark
+from bookmark_extract import Bookmark
 import subprocess
 # from timeit import default_timer
 
@@ -47,4 +47,4 @@ def main():
 if __name__ == '__main__':
     mybookmark = Bookmark()
     main()
-    print("Done!")
+    print(f"Created 'data.json' -> {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}\nSaved in default home directory!")
