@@ -12,7 +12,7 @@ frequency = "*/5 * * * *"
 # Create the command to be run by the cron job
 python_path = Bookmark.python_path()
 
-command = f"{frequency} {python_path} {python_file} &>> log.txt  &"
+command = f"{frequency} {python_path} {python_file} &>> {parent}/log.txt &"
 
 # Add the cron job to the crontab file
 cron_path = os.path.join(parent, 'src', 'crontab.txt')
@@ -23,4 +23,4 @@ with open(cron_path, "a") as f:
 os.system(f"crontab {cron_path}")
 
 # Print a message to confirm that the cron job was added
-os.system(f"echo 'Cron job added for Bookmarks' >> log.txt ")
+os.system(f"echo 'Cron job added for Bookmarks' >> {parent}/log.txt ")
