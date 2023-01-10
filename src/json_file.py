@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from src.bookmark_extract import Bookmark
 import subprocess
-from timeit import default_timer
+# from timeit import default_timer
 
 def bookmark_mod(path):
     command = f'stat -c "%Y" {path}'
@@ -43,5 +43,8 @@ def main():
         bookmark_data(d)
         json.dump(d, f, indent=4)
 
-mybookmark = Bookmark()
-main()
+
+if __name__ == '__main__':
+    mybookmark = Bookmark()
+    main()
+    print("Done!")
