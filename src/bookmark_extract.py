@@ -17,12 +17,12 @@ class Bookmark(object):
         return path
 
     def _bookmark_search(self, path: str) -> str:
-        path = self._getpath(path)
+        path = self._getpath(path=path)
         _cmd = 'find {0} -name "Book*s"'.format(path)
         bookmark_file = subprocess.check_output(_cmd, shell=True).decode().strip()
         return bookmark_file
 
-    def bookmark_dict(self, fetchpath:bool=False):
+    def bookmark_dict(self, fetchpath: bool = False):
         fullpath = self._bookmark_search(self._path)
         if fetchpath:
             return fullpath
